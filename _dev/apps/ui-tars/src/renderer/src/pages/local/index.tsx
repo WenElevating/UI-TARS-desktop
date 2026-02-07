@@ -61,6 +61,7 @@ const LocalOperator = () => {
     setActiveSession,
     updateMessages,
     createSession,
+    deleteSession,
     chatMessages,
   } = useSession();
   const [pendingAction, setPendingAction] = useState<'newChat' | 'back' | null>(
@@ -152,10 +153,18 @@ const LocalOperator = () => {
   }, []);
 
   const onBack = useCallback(async () => {
+    if(chatMessages.length == 0){
+        deleteSession(state.sessionId);
+    }
     navigate('/');
   }, []);
 
   const handleNewChat = useCallback(() => {
+    // 加个判断，如果当前会话没被使用过，就不重新创建了
+    if(chatMessages.length == 0){
+      console.log("当前会话未开始，不必创建新会话");
+      return;
+    }
     if (needsConfirm) {
       setPendingAction('newChat');
       setNavDialogOpen(true);
